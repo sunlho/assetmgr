@@ -1,0 +1,403 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+  import type { AssetEntry, AssetFileSystem } from "../filesystem";
+
+  type Props = {
+    root: AssetFileSystem;
+    onClose: () => void;
+    onImported: (file: string) => void | Promise<void>;
+  };
+
+  let { root, onClose, onImported }: Props = $props();
+
+  let importPath = $state("");
+  let importEntries = $state<AssetEntry[]>([]);
+  let selectedImportPath = $state<string | null>(null);
+  let isLoadingEntries = $state(false);
+  let entriesError = $state("");
+  let isAddingToManifest = $state(false);
+  let importActionError = $state("");
+
+  const loadImportEntries = async (path: string) => {
+    isLoadingEntries = true;
+    entriesError = "";
+    try {
+      const response = await root.listEntries(path);
+      importPath = response.path;
+      importEntries = response.entries;
+    } catch {
+      importEntries = [];
+      entriesError = "无法读取资源列表，请稍后重试。";
+    } finally {
+      isLoadingEntries = false;
+    }
+  };
+
+  const closeDialog = () => {
+    if (isAddingToManifest) {
+      return;
+    }
+    onClose();
+  };
+
+  const selectImportEntry = (entry: AssetEntry) => {
+    if (entry.directory) {
+      selectedImportPath = null;
+      void loadImportEntries(entry.path);
+      return;
+    }
+    selectedImportPath = entry.path;
+  };
+
+  const parentImportPath = () => {
+    if (!importPath) {
+      return;
+    }
+    const parts = importPath.split("/").filter(Boolean);
+    parts.pop();
+    selectedImportPath = null;
+    void loadImportEntries(parts.join("/"));
+  };
+
+  const confirmImportSelection = async () => {
+    if (!selectedImportPath) {
+      return;
+    }
+
+    const file = selectedImportPath;
+    isAddingToManifest = true;
+    importActionError = "";
+    try {
+      await root.editManifestFile(file, "add");
+      isAddingToManifest = false;
+      onClose();
+      await onImported(file);
+    } catch {
+      importActionError = "无法将文件添加到 manifest.files，请稍后重试。";
+    } finally {
+      isAddingToManifest = false;
+    }
+  };
+
+  const handleKeydown = (event: KeyboardEvent) => {
+    if (!isAddingToManifest && event.key === "Escape") {
+      closeDialog();
+    }
+  };
+
+  const closeOnBackdrop = (event: MouseEvent) => {
+    if (!isAddingToManifest && event.target === event.currentTarget) {
+      closeDialog();
+    }
+  };
+
+  onMount(() => {
+    void loadImportEntries("");
+  });
+</script>
+
+<svelte:window onkeydown={handleKeydown} />
+
+<div class="modal-backdrop" role="presentation" onclick={closeOnBackdrop}>
+  <div class="import-dialog" aria-labelledby="import-dialog-title">
+    <header class="dialog-header">
+      <h2 id="import-dialog-title">选择文件</h2>
+      <button
+        class="dialog-close-button"
+        type="button"
+        aria-label="关闭"
+        onclick={closeDialog}
+        disabled={isAddingToManifest}
+      >
+        ×
+      </button>
+    </header>
+
+    <div class="dialog-toolbar">
+      <button
+        class="parent-button"
+        type="button"
+        onclick={parentImportPath}
+        disabled={!importPath || isLoadingEntries || isAddingToManifest}
+      >
+        返回上级
+      </button>
+      <span class="current-path">{importPath || "资源根目录"}</span>
+    </div>
+
+    <div class="entry-list" aria-live="polite">
+      {#if isLoadingEntries}
+        <p class="dialog-message">正在读取资源列表...</p>
+      {:else if entriesError}
+        <p class="dialog-message dialog-message--error">{entriesError}</p>
+      {:else if importEntries.length === 0}
+        <p class="dialog-message">当前目录没有可选文件。</p>
+      {:else}
+        {#each importEntries as entry}
+          <button
+            class="entry-button"
+            class:entry-selected={selectedImportPath === entry.path}
+            type="button"
+            disabled={isAddingToManifest}
+            onclick={() => selectImportEntry(entry)}
+          >
+            <span class="entry-icon" aria-hidden="true">
+              {entry.directory ? "▸" : "·"}
+            </span>
+            <span class="entry-name">{entry.name}</span>
+            {#if entry.directory}
+              <span class="entry-kind">目录</span>
+            {/if}
+          </button>
+        {/each}
+      {/if}
+    </div>
+
+    <footer class="dialog-footer">
+      {#if importActionError}
+        <p class="dialog-action-error">{importActionError}</p>
+      {/if}
+      <button
+        class="dialog-secondary-button"
+        type="button"
+        onclick={closeDialog}
+        disabled={isAddingToManifest}
+      >
+        取消
+      </button>
+      <button
+        class="dialog-primary-button"
+        type="button"
+        disabled={!selectedImportPath || isLoadingEntries || isAddingToManifest}
+        onclick={confirmImportSelection}
+      >
+        {isAddingToManifest ? "导入中..." : "导入文件"}
+      </button>
+    </footer>
+  </div>
+</div>
+
+<style>
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(3, 8, 15, 0.72);
+    backdrop-filter: blur(4px);
+  }
+
+  .import-dialog {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 640px);
+    max-height: calc(100vh - 48px);
+    overflow: hidden;
+    border: 1px solid rgba(154, 176, 210, 0.28);
+    border-radius: 14px;
+    background: #131c2b;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.48);
+  }
+
+  .dialog-header,
+  .dialog-toolbar,
+  .dialog-footer {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .dialog-header {
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(154, 176, 210, 0.14);
+  }
+
+  .dialog-header h2 {
+    margin: 0;
+    color: #f3f6fb;
+    font-size: 18px;
+  }
+
+  .dialog-close-button {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 7px;
+    color: #a9b7cc;
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .dialog-close-button:hover {
+    color: #f3f6fb;
+    background: rgba(154, 176, 210, 0.12);
+  }
+
+  .dialog-close-button:disabled,
+  .entry-button:disabled,
+  .dialog-secondary-button:disabled {
+    cursor: wait;
+    opacity: 0.48;
+  }
+
+  .dialog-toolbar {
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(154, 176, 210, 0.1);
+  }
+
+  .parent-button,
+  .dialog-secondary-button,
+  .dialog-primary-button {
+    min-height: 36px;
+    border-radius: 8px;
+    padding: 0 13px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .parent-button,
+  .dialog-secondary-button {
+    border: 1px solid rgba(154, 176, 210, 0.24);
+    color: #c1cee2;
+    background: rgba(28, 41, 61, 0.72);
+  }
+
+  .parent-button:hover:not(:disabled),
+  .dialog-secondary-button:hover {
+    border-color: rgba(154, 176, 210, 0.48);
+    background: rgba(39, 55, 80, 0.9);
+  }
+
+  .parent-button:disabled,
+  .dialog-primary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+  }
+
+  .current-path {
+    min-width: 0;
+    overflow: hidden;
+    color: #91a2bc;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .entry-list {
+    flex: 1 1 auto;
+    min-height: 220px;
+    overflow-y: auto;
+    padding: 8px;
+    scrollbar-color: rgba(144, 186, 255, 0.42) transparent;
+    scrollbar-width: thin;
+  }
+
+  .entry-list::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .entry-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .entry-list::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(144, 186, 255, 0.36);
+    background-clip: padding-box;
+  }
+
+  .entry-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(144, 186, 255, 0.62);
+    background-clip: padding-box;
+  }
+
+  .entry-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 42px;
+    gap: 8px;
+    border: 0;
+    border-radius: 7px;
+    padding: 0 10px;
+    color: #c1cee2;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .entry-button:hover,
+  .entry-button.entry-selected {
+    color: #e4edfb;
+    background: rgba(72, 125, 216, 0.2);
+  }
+
+  .entry-icon {
+    width: 18px;
+    color: #90baff;
+    text-align: center;
+  }
+
+  .entry-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .entry-kind {
+    margin-left: auto;
+    color: #7f90aa;
+    font-size: 12px;
+  }
+
+  .dialog-message {
+    display: grid;
+    min-height: 180px;
+    place-items: center;
+    margin: 0;
+    padding: 24px;
+    color: #7f90aa;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .dialog-message--error {
+    color: #ffabab;
+  }
+
+  .dialog-action-error {
+    margin: 0 auto 0 0;
+    color: #ffabab;
+    font-size: 12px;
+  }
+
+  .dialog-footer {
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 18px;
+    border-top: 1px solid rgba(154, 176, 210, 0.14);
+  }
+
+  .dialog-primary-button {
+    border: 1px solid #6c9ff1;
+    color: #08111f;
+    background: #90baff;
+  }
+
+  .dialog-primary-button:hover:not(:disabled) {
+    background: #b0ceff;
+  }
+</style>

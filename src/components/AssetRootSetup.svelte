@@ -1,68 +1,64 @@
 <script lang="ts">
   type Props = {
-    onCreate: () => void | Promise<void>;
-    onReload: () => void | Promise<void>;
-    onSelectRoot: () => void | Promise<void>;
-    isCreating: boolean;
-    isChecking: boolean;
-    isSelectingRoot: boolean;
+    rootName: string | null;
+    needsPermission: boolean;
+    isBusy: boolean;
     actionMessage: string;
+    onSelect: () => void | Promise<void>;
+    onRequestPermission: () => void | Promise<void>;
   };
 
   let {
-    onCreate,
-    onReload,
-    onSelectRoot,
-    isCreating,
-    isChecking,
-    isSelectingRoot,
+    rootName,
+    needsPermission,
+    isBusy,
     actionMessage,
+    onSelect,
+    onRequestPermission,
   }: Props = $props();
 </script>
 
-<div class="empty-state" aria-labelledby="missing-title">
-  <div class="file-icon" aria-hidden="true">
-    <span>{"{}"}</span>
-  </div>
+<div class="empty-state" aria-labelledby="root-title">
+  <div class="file-icon" aria-hidden="true">⌂</div>
   <p class="eyebrow">Asset Manager</p>
-  <h1 id="missing-title">找不到 manifest.json</h1>
-  <p class="description">创建 manifest 文件后，才能开始管理和预览项目资源。</p>
+  <h1 id="root-title">
+    {needsPermission ? "需要访问资源目录" : "选择资源目录"}
+  </h1>
+  <p class="description">
+    {#if needsPermission && rootName}
+      已找到目录“{rootName}”，请重新授予访问权限后继续。
+    {:else}
+      选择游戏项目的 assets 目录，Asset Manager 将直接读取和修改其中的资源与 manifest.json。
+    {/if}
+  </p>
   <div class="actions">
+    {#if needsPermission}
+      <button
+        class="primary-button"
+        type="button"
+        onclick={onRequestPermission}
+        disabled={isBusy}
+      >
+        {isBusy ? "授权中..." : "授予访问权限"}
+      </button>
+    {/if}
     <button
-      class="primary-button"
+      class={needsPermission ? "secondary-button" : "primary-button"}
       type="button"
-      onclick={onCreate}
-      disabled={isCreating || isChecking || isSelectingRoot}
+      onclick={onSelect}
+      disabled={isBusy}
     >
-      <span aria-hidden="true">+</span>
-      {isCreating ? "创建中..." : "创建 manifest 文件"}
-    </button>
-    <button
-      class="secondary-button"
-      type="button"
-      onclick={onReload}
-      disabled={isChecking || isCreating || isSelectingRoot}
-    >
-      {isChecking ? "检查中..." : "重新检查"}
-    </button>
-    <button
-      class="secondary-button"
-      type="button"
-      onclick={onSelectRoot}
-      disabled={isChecking || isCreating || isSelectingRoot}
-    >
-      {isSelectingRoot ? "选择中..." : "重新选择目录"}
+      {isBusy ? "处理中..." : "选择资源目录"}
     </button>
   </div>
   {#if actionMessage}
-    <p class="action-message" role="status">{actionMessage}</p>
+    <p class="action-message" role="alert">{actionMessage}</p>
   {/if}
 </div>
 
 <style>
   .empty-state {
     width: min(100%, 560px);
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -71,6 +67,7 @@
     border-radius: 16px;
     background: rgba(19, 28, 43, 0.88);
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+    text-align: center;
   }
 
   .file-icon {
@@ -83,11 +80,7 @@
     border-radius: 18px;
     color: #a8caff;
     background: rgba(72, 125, 216, 0.16);
-    font:
-      700 25px/1 ui-monospace,
-      SFMono-Regular,
-      Consolas,
-      monospace;
+    font-size: 32px;
   }
 
   .eyebrow {
@@ -106,7 +99,7 @@
   }
 
   .description {
-    max-width: 390px;
+    max-width: 420px;
     margin: 14px 0 28px;
     color: #a9b7cc;
     font-size: 15px;
@@ -161,13 +154,6 @@
     box-shadow: 0 10px 28px rgba(55, 111, 205, 0.38);
   }
 
-  .primary-button span {
-    margin-right: 7px;
-    font-size: 19px;
-    font-weight: 400;
-    vertical-align: -1px;
-  }
-
   .secondary-button {
     border: 1px solid rgba(154, 176, 210, 0.3);
     color: #c1cee2;
@@ -182,7 +168,7 @@
   .action-message {
     max-width: 430px;
     margin: 22px 0 0;
-    color: #9db6d8;
+    color: #ffabab;
     font-size: 13px;
     line-height: 1.55;
   }

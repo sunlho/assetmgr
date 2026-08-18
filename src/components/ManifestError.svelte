@@ -7,7 +7,7 @@
   let { onRetry, isChecking }: Props = $props();
 </script>
 
-<main class="empty-state" aria-labelledby="error-title">
+<div class="empty-state" aria-labelledby="error-title">
   <div class="file-icon file-icon--error" aria-hidden="true">!</div>
   <p class="eyebrow">Asset Manager</p>
   <h1 id="error-title">暂时无法检查 manifest.json</h1>
@@ -20,7 +20,7 @@
   >
     {isChecking ? "检查中..." : "重新检查"}
   </button>
-</main>
+</div>
 
 <style>
   .empty-state {
