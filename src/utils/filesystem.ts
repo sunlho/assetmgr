@@ -23,10 +23,7 @@ type AssetFileErrorCode =
   | "invalid-path";
 
 export class AssetFileError extends Error {
-  constructor(
-    public readonly code: AssetFileErrorCode,
-    message: string,
-  ) {
+  constructor(public readonly code: AssetFileErrorCode, message: string) {
     super(message);
     this.name = "AssetFileError";
   }
@@ -68,7 +65,9 @@ const readStoredRootHandle = async () => {
       .get(rootHandleKey);
     request.onsuccess = () => {
       database.close();
-      resolve((request.result as FileSystemDirectoryHandle | undefined) ?? null);
+      resolve(
+        (request.result as FileSystemDirectoryHandle | undefined) ?? null
+      );
     };
     request.onerror = () => {
       database.close();
@@ -106,11 +105,11 @@ const normalizePath = (path: string) => {
 };
 
 const isDirectoryHandle = (
-  handle: FileSystemHandle,
+  handle: FileSystemHandle
 ): handle is FileSystemDirectoryHandle => handle.kind === "directory";
 
 const isFileHandle = (
-  handle: FileSystemHandle,
+  handle: FileSystemHandle
 ): handle is FileSystemFileHandle => handle.kind === "file";
 
 export class AssetFileSystem {
@@ -171,10 +170,28 @@ export class AssetFileSystem {
     return (await this.resolveFile(path)).getFile();
   }
 
+  async fileExists(path: string) {
+    try {
+      await this.resolveFile(path);
+      return true;
+    } catch (error) {
+      if (isMissingError(error)) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  async writeTextFile(path: string, content: string) {
+    await this.writeText(path, content);
+  }
+
   async readManifest() {
     let content: string;
     try {
-      content = await (await this.resolveFile("manifest.json")).getFile().then((file) => file.text());
+      content = await (await this.resolveFile("manifest.json"))
+        .getFile()
+        .then((file) => file.text());
     } catch (error) {
       if (isMissingError(error)) {
         throw new AssetFileError("not-found", "manifest.json 不存在。");
@@ -192,7 +209,10 @@ export class AssetFileSystem {
       if (error instanceof AssetFileError) {
         throw error;
       }
-      throw new AssetFileError("invalid-manifest", "manifest.json 不是有效的 JSON 对象。");
+      throw new AssetFileError(
+        "invalid-manifest",
+        "manifest.json 不是有效的 JSON 对象。"
+      );
     }
   }
 
@@ -206,14 +226,20 @@ export class AssetFileSystem {
       }
     }
 
-    await this.writeText("manifest.json", `${JSON.stringify(defaultManifest(), null, 2)}\n`);
+    await this.writeText(
+      "manifest.json",
+      `${JSON.stringify(defaultManifest(), null, 2)}\n`
+    );
   }
 
   async editManifestFile(path: string, action: ManifestFileAction) {
     const segments = normalizePath(path);
     const relative = segments.join("/");
     if (!relative || relative === "manifest.json") {
-      throw new AssetFileError("invalid-path", "manifest.json 不能出现在 manifest.files 中。");
+      throw new AssetFileError(
+        "invalid-path",
+        "manifest.json 不能出现在 manifest.files 中。"
+      );
     }
     if (action === "add") {
       await this.resolveFile(relative);
@@ -224,23 +250,30 @@ export class AssetFileSystem {
     if (files == null) {
       manifest.files = [];
     } else if (!Array.isArray(files)) {
-      throw new AssetFileError("invalid-manifest", "manifest.files 必须是数组。");
+      throw new AssetFileError(
+        "invalid-manifest",
+        "manifest.files 必须是数组。"
+      );
     }
 
     const manifestFiles = manifest.files as unknown[];
     const containsFile = manifestFiles.some(
-      (entry) => typeof entry === "string" && entry === relative,
+      (entry) => typeof entry === "string" && entry === relative
     );
     const changed =
       action === "add"
         ? !containsFile && (manifestFiles.push(relative), true)
         : containsFile &&
-          (manifest.files = manifestFiles.filter(
-            (entry) => !(typeof entry === "string" && entry === relative),
-          ), true);
+          ((manifest.files = manifestFiles.filter(
+            (entry) => !(typeof entry === "string" && entry === relative)
+          )),
+          true);
 
     if (changed) {
-      await this.writeText("manifest.json", `${JSON.stringify(manifest, null, 2)}\n`);
+      await this.writeText(
+        "manifest.json",
+        `${JSON.stringify(manifest, null, 2)}\n`
+      );
     }
   }
 
@@ -312,7 +345,7 @@ export const pickAssetFileSystem = async () => {
   if (!picker) {
     throw new AssetFileError(
       "unsupported",
-      "当前浏览器不支持本地资源目录访问，请使用 Chrome 或 Edge。",
+      "当前浏览器不支持本地资源目录访问，请使用 Chrome 或 Edge。"
     );
   }
 

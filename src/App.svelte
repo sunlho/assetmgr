@@ -1,20 +1,32 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import AssetRootSetup from "./components/AssetRootSetup.svelte";
-  import ManifestError from "./components/ManifestError.svelte";
-  import ManifestMissing from "./components/ManifestMissing.svelte";
-  import ManifestReady from "./components/ManifestReady.svelte";
+  import ManifestError from "./ManifestError.svelte";
+  import ManifestMissing from "./ManifestMissing.svelte";
+  import ManifestReady from "./ManifestReady.svelte";
   import {
     AssetFileError,
     type AssetFileSystem,
     pickAssetFileSystem,
     restoreAssetFileSystem,
-  } from "./filesystem";
+  } from "./utils/filesystem";
 
   type RootStatus = "loading" | "missing" | "permission" | "ready" | "error";
   type ManifestStatus = "loading" | "ready" | "missing" | "error";
   type Manifest = {
     files?: unknown;
+    appearances?: unknown;
+    localization?: unknown;
+  };
+  type LocalizationLanguage = {
+    tag: string;
+    displayName: string;
+    path: string;
+  };
+  type LocalizationData = {
+    path: string;
+    catalogs: string[];
+    languages: LocalizationLanguage[];
   };
 
   let rootStatus = $state<RootStatus>("loading");
@@ -26,9 +38,95 @@
   let isChecking = $state(false);
   let isCreating = $state(false);
   let manifestFiles = $state<string[]>([]);
+  let manifestAppearances = $state<string[]>([]);
+  let localizationData = $state<LocalizationData | null>(null);
 
   const getErrorMessage = (error: unknown, fallback: string) =>
     error instanceof AssetFileError ? error.message : fallback;
+
+  const isObject = (value: unknown): value is Record<string, unknown> =>
+    value !== null && typeof value === "object" && !Array.isArray(value);
+
+  const readLocalizationData = async (
+    root: AssetFileSystem,
+    manifest: Manifest,
+  ): Promise<LocalizationData | null> => {
+    if (
+      typeof manifest.localization !== "string" ||
+      manifest.localization.trim() === ""
+    ) {
+      return null;
+    }
+
+    const localizationPath = manifest.localization.trim();
+    let content: string;
+    try {
+      content = await (await root.readFile(localizationPath)).text();
+    } catch {
+      throw new AssetFileError(
+        "invalid-manifest",
+        "无法读取 manifest.localization 指向的文件“" + localizationPath + "”。",
+      );
+    }
+
+    let localization: unknown;
+    try {
+      localization = JSON.parse(content);
+    } catch {
+      throw new AssetFileError(
+        "invalid-manifest",
+        "manifest.localization 指向的文件“" +
+          localizationPath +
+          "”不是有效的 JSON。",
+      );
+    }
+
+    if (
+      !isObject(localization) ||
+      !Array.isArray(localization.catalogs) ||
+      !Array.isArray(localization.languages)
+    ) {
+      return null;
+    }
+
+    const languages = localization.languages
+      .map((language): LocalizationLanguage | null => {
+        if (
+          !isObject(language) ||
+          typeof language.tag !== "string" ||
+          language.tag.trim() === "" ||
+          typeof language.path !== "string" ||
+          language.path.trim() === ""
+        ) {
+          return null;
+        }
+        const displayName =
+          typeof language.name === "string" && language.name.trim() !== ""
+            ? language.name.trim()
+            : language.tag.trim();
+        return {
+          tag: language.tag.trim(),
+          displayName,
+          path: language.path.trim(),
+        };
+      })
+      .filter(
+        (language): language is LocalizationLanguage => language !== null,
+      );
+    if (languages.length === 0) {
+      return null;
+    }
+
+    const catalogs = localization.catalogs.filter(
+      (catalog): catalog is string =>
+        typeof catalog === "string" && catalog.trim() !== "",
+    );
+    return {
+      path: localizationPath,
+      catalogs,
+      languages,
+    };
+  };
 
   const loadManifest = async () => {
     if (!assetFileSystem) {
@@ -45,9 +143,18 @@
             (file): file is string => typeof file === "string",
           )
         : [];
+      manifestAppearances = Array.isArray(manifest.appearances)
+        ? manifest.appearances.filter(
+            (appearance): appearance is string =>
+              typeof appearance === "string",
+          )
+        : [];
+      localizationData = await readLocalizationData(assetFileSystem, manifest);
       manifestStatus = "ready";
     } catch (error) {
       manifestFiles = [];
+      manifestAppearances = [];
+      localizationData = null;
       manifestStatus =
         error instanceof AssetFileError && error.code === "not-found"
           ? "missing"
@@ -192,6 +299,8 @@
     <ManifestReady
       root={assetFileSystem}
       files={manifestFiles}
+      appearances={manifestAppearances}
+      {localizationData}
       onManifestChanged={loadManifest}
     />
   {:else if manifestStatus === "missing"}
@@ -210,23 +319,6 @@
 </div>
 
 <style>
-  :global(*) {
-    box-sizing: border-box;
-  }
-
-  :global(body) {
-    margin: 0;
-    background: #0c111b;
-    color: #f3f6fb;
-  }
-
-  :global(html),
-  :global(body),
-  :global(#app) {
-    height: 100%;
-    overflow: hidden;
-  }
-
   .app {
     height: 100vh;
     min-height: 100vh;

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { AssetEntry, AssetFileSystem } from "../filesystem";
+  import type { AssetEntry, AssetFileSystem } from "../utils/filesystem";
 
   type Props = {
     root: AssetFileSystem;
@@ -193,7 +193,7 @@
     display: flex;
     flex-direction: column;
     width: min(100%, 640px);
-    max-height: calc(100vh - 48px);
+    height: 80%;
     overflow: hidden;
     border: 1px solid rgba(154, 176, 210, 0.28);
     border-radius: 14px;
@@ -296,29 +296,6 @@
     min-height: 220px;
     overflow-y: auto;
     padding: 8px;
-    scrollbar-color: rgba(144, 186, 255, 0.42) transparent;
-    scrollbar-width: thin;
-  }
-
-  .entry-list::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .entry-list::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .entry-list::-webkit-scrollbar-thumb {
-    border: 2px solid transparent;
-    border-radius: 999px;
-    background: rgba(144, 186, 255, 0.36);
-    background-clip: padding-box;
-  }
-
-  .entry-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(144, 186, 255, 0.62);
-    background-clip: padding-box;
   }
 
   .entry-button {

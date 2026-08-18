@@ -1,0 +1,233 @@
+.content {
+  flex: 1;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid rgba(154, 176, 210, 0.18);
+  border-radius: 12px;
+  background: rgba(19, 28, 43, 0.72);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.files-content {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.file-list-panel,
+.file-detail-panel {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid rgba(154, 176, 210, 0.14);
+  border-radius: 10px;
+  background: rgba(12, 17, 27, 0.32);
+}
+
+.file-list-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-list-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(154, 176, 210, 0.14);
+}
+
+.file-list-header h2 {
+  margin: 0;
+  color: #dce7f8;
+  font-size: 14px;
+}
+
+.list-caption {
+  margin: 3px 0 0;
+  color: #7f90aa;
+  font-size: 11px;
+}
+
+.import-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  border: 1px solid #6c9ff1;
+  border-radius: 7px;
+  padding: 0 9px;
+  color: #08111f;
+  background: #90baff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.import-button span {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.import-button:hover {
+  background: #b0ceff;
+}
+
+.file-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+}
+
+.file-item,
+.empty-file-list {
+  display: block;
+  width: 100%;
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(154, 176, 210, 0.1);
+  color: #b9c7db;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.file-item {
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  cursor: pointer;
+}
+
+.file-list li:last-child .file-item {
+  border-bottom: 0;
+}
+
+.file-item:hover {
+  color: #d4e1f6;
+  background: rgba(72, 125, 216, 0.1);
+}
+
+.file-item.active {
+  color: #dceaff;
+  background: rgba(72, 125, 216, 0.22);
+}
+
+.empty-file-list {
+  color: #7f90aa;
+  text-align: center;
+  border-bottom: 0;
+}
+
+.file-detail-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(12, 17, 27, 0.18);
+}
+
+.preview-placeholder,
+.preview-message {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
+  color: #7f90aa;
+  font-size: 14px;
+  text-align: center;
+}
+
+.preview-message--error {
+  color: #ffabab;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(154, 176, 210, 0.14);
+}
+
+.preview-title {
+  min-width: 0;
+  display: block;
+  overflow: hidden;
+  color: #dce7f8;
+  font-size: 13px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-button {
+  flex: 0 0 auto;
+  min-height: 30px;
+  border: 1px solid rgba(255, 140, 140, 0.48);
+  border-radius: 7px;
+  padding: 0 10px;
+  color: #ffc1c1;
+  background: rgba(122, 39, 51, 0.35);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.delete-button:hover:not(:disabled) {
+  border-color: rgba(255, 160, 160, 0.72);
+  color: #ffe2e2;
+  background: rgba(156, 46, 61, 0.58);
+}
+
+.delete-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.preview-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.preview-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  object-fit: contain;
+}
+
+.preview-text {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  margin: 0;
+  padding: 16px;
+  color: #c9d6e9;
+  font: 13px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow: auto;
+}

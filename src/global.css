@@ -1,0 +1,100 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scrollbar-color: rgba(144, 186, 255, 0.42) transparent;
+  scrollbar-width: thin;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(144, 186, 255, 0.36);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(144, 186, 255, 0.62);
+  background-clip: padding-box;
+}
+
+body {
+  margin: 0;
+  background: #0c111b;
+  color: #f3f6fb;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(154, 176, 210, 0.24);
+  border-radius: 7px;
+  padding: 9px 10px;
+  color: #dce7f8;
+  background: rgba(7, 12, 20, 0.58);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+textarea:focus {
+  border-color: #6c9ff1;
+  outline: 2px solid rgba(108, 159, 241, 0.22);
+  outline-offset: 0;
+}
+
+textarea:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+input[type="text"],
+input[type="number"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(154, 176, 210, 0.24);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #dce7f8;
+  background: rgba(7, 12, 20, 0.58);
+  font: inherit;
+  font-size: 12px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: #6c9ff1;
+  outline: 2px solid rgba(108, 159, 241, 0.22);
+  outline-offset: 0;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #90baff;
+  vertical-align: middle;
+}
