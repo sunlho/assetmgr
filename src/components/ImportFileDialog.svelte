@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { AssetEntry, AssetFileSystem } from "../utils/filesystem";
+  import type { AssetEntry, AssetFileSystem } from "@/utils/filesystem";
+  import Button from "@/components/Button.svelte";
 
   type Props = {
     root: AssetFileSystem;
@@ -114,14 +115,13 @@
     </header>
 
     <div class="dialog-toolbar">
-      <button
-        class="parent-button"
-        type="button"
-        onclick={parentImportPath}
+      <Button
+        type="info"
         disabled={!importPath || isLoadingEntries || isAddingToManifest}
+        onclick={parentImportPath}
       >
         返回上级
-      </button>
+      </Button>
       <span class="current-path">{importPath || "资源根目录"}</span>
     </div>
 
@@ -157,22 +157,17 @@
       {#if importActionError}
         <p class="dialog-action-error">{importActionError}</p>
       {/if}
-      <button
-        class="dialog-secondary-button"
-        type="button"
-        onclick={closeDialog}
-        disabled={isAddingToManifest}
-      >
+
+      <Button type="info" disabled={isAddingToManifest} onclick={closeDialog}>
         取消
-      </button>
-      <button
-        class="dialog-primary-button"
-        type="button"
+      </Button>
+      <Button
+        type="primary"
         disabled={!selectedImportPath || isLoadingEntries || isAddingToManifest}
         onclick={confirmImportSelection}
       >
         {isAddingToManifest ? "导入中..." : "导入文件"}
-      </button>
+      </Button>
     </footer>
   </div>
 </div>
@@ -239,8 +234,7 @@
   }
 
   .dialog-close-button:disabled,
-  .entry-button:disabled,
-  .dialog-secondary-button:disabled {
+  .entry-button:disabled {
     cursor: wait;
     opacity: 0.48;
   }
@@ -249,37 +243,6 @@
     gap: 12px;
     padding: 12px 18px;
     border-bottom: 1px solid rgba(154, 176, 210, 0.1);
-  }
-
-  .parent-button,
-  .dialog-secondary-button,
-  .dialog-primary-button {
-    min-height: 36px;
-    border-radius: 8px;
-    padding: 0 13px;
-    font: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .parent-button,
-  .dialog-secondary-button {
-    border: 1px solid rgba(154, 176, 210, 0.24);
-    color: #c1cee2;
-    background: rgba(28, 41, 61, 0.72);
-  }
-
-  .parent-button:hover:not(:disabled),
-  .dialog-secondary-button:hover {
-    border-color: rgba(154, 176, 210, 0.48);
-    background: rgba(39, 55, 80, 0.9);
-  }
-
-  .parent-button:disabled,
-  .dialog-primary-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.48;
   }
 
   .current-path {
@@ -366,15 +329,5 @@
     gap: 10px;
     padding: 12px 18px;
     border-top: 1px solid rgba(154, 176, 210, 0.14);
-  }
-
-  .dialog-primary-button {
-    border: 1px solid #6c9ff1;
-    color: #08111f;
-    background: #90baff;
-  }
-
-  .dialog-primary-button:hover:not(:disabled) {
-    background: #b0ceff;
   }
 </style>

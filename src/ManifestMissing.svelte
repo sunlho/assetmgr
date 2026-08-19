@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Button from "@/components/Button.svelte";
+
   type Props = {
     onCreate: () => void | Promise<void>;
     onReload: () => void | Promise<void>;
@@ -28,31 +30,30 @@
   <h1 id="missing-title">找不到 manifest.json</h1>
   <p class="description">创建 manifest 文件后，才能开始管理和预览项目资源。</p>
   <div class="actions">
-    <button
-      class="primary-button"
-      type="button"
-      onclick={onCreate}
+    <Button
+      size="large"
       disabled={isCreating || isChecking || isSelectingRoot}
+      onclick={onCreate}
     >
-      <span aria-hidden="true">+</span>
       {isCreating ? "创建中..." : "创建 manifest 文件"}
-    </button>
-    <button
-      class="secondary-button"
-      type="button"
-      onclick={onReload}
+    </Button>
+
+    <Button
+      type="info"
+      size="large"
       disabled={isChecking || isCreating || isSelectingRoot}
+      onclick={onReload}
     >
       {isChecking ? "检查中..." : "重新检查"}
-    </button>
-    <button
-      class="secondary-button"
-      type="button"
+    </Button>
+    <Button
+      type="info"
+      size="large"
+      disabled={isCreating || isChecking || isSelectingRoot}
       onclick={onSelectRoot}
-      disabled={isChecking || isCreating || isSelectingRoot}
     >
       {isSelectingRoot ? "选择中..." : "重新选择目录"}
-    </button>
+    </Button>
   </div>
   {#if actionMessage}
     <p class="action-message" role="status">{actionMessage}</p>

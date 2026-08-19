@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import AssetRootSetup from "./components/AssetRootSetup.svelte";
-  import ManifestError from "./ManifestError.svelte";
-  import ManifestMissing from "./ManifestMissing.svelte";
-  import ManifestReady from "./ManifestReady.svelte";
+  import AssetRootSetup from "@/components/AssetRootSetup.svelte";
+  import ManifestError from "@/ManifestError.svelte";
+  import ManifestMissing from "@/ManifestMissing.svelte";
+  import ManifestReady from "@/ManifestReady.svelte";
   import {
     AssetFileError,
     type AssetFileSystem,
     pickAssetFileSystem,
     restoreAssetFileSystem,
-  } from "./utils/filesystem";
+  } from "@/utils/filesystem";
 
   type RootStatus = "loading" | "missing" | "permission" | "ready" | "error";
   type ManifestStatus = "loading" | "ready" | "missing" | "error";
@@ -327,14 +327,6 @@
     place-items: center;
     padding: 32px 20px;
     overflow: hidden;
-    font-family:
-      Inter,
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif;
     background: radial-gradient(
         circle at 50% -20%,
         rgba(63, 104, 184, 0.2),

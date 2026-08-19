@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
-  import type { AssetFileSystem } from "../utils/filesystem";
+  import type { AssetFileSystem } from "@/utils/filesystem";
+  import Button from "@/components/Button.svelte";
 
   type LocalizationLanguage = {
     tag: string;
@@ -565,10 +566,8 @@
           </p>
         {/if}
       </div>
-      <button
-        class="localization-add-button"
-        type="button"
-        aria-label="新建 catalog"
+
+      <Button
         disabled={localizationPath === null ||
           languages.length === 0 ||
           isCreatingCatalog ||
@@ -576,13 +575,10 @@
           isDeletingKey}
         onclick={createCatalog}
       >
-        {isCreatingCatalog ? "创建中..." : "新建"}
-      </button>
+        {isCreatingCatalog ? "创建中..." : "新建文件"}
+      </Button>
     </div>
     <div class="localization-level">
-      <div class="localization-level-header">
-        <span>Catalogs</span>
-      </div>
       <ul class="file-list localization-catalog-list">
         {#if catalogNames.length === 0}
           <li class="empty-file-list">暂无 catalog 文件</li>
@@ -615,15 +611,8 @@
         {#if selectedCatalog}
           <small>{selectedCatalog}</small>
         {/if}
-        <button
-          class="localization-add-button"
-          type="button"
-          aria-label="添加 key"
-          disabled={!canAddKey}
-          onclick={createKey}
-        >
-          添加
-        </button>
+
+        <Button disabled={!canAddKey} onclick={createKey}>添加</Button>
       </div>
     </div>
     {#if keyActionError}
@@ -671,14 +660,13 @@
           <span class="preview-subtitle">{selectedCatalog}</span>
         </div>
         <div class="translation-actions">
-          <button
-            class="delete-key-button"
-            type="button"
+          <Button
+            type="danger"
             disabled={isSaving || isDeletingKey}
             onclick={deleteKey}
           >
             {isDeletingKey ? "删除中..." : "删除 key"}
-          </button>
+          </Button>
           {#if saveError}
             <span class="localization-save-error" role="alert">{saveError}</span
             >
@@ -687,14 +675,13 @@
               >{saveMessage}</span
             >
           {/if}
-          <button
-            class="save-button"
-            type="button"
+
+          <Button
             disabled={!hasUnsavedChanges || isSaving || isDeletingKey}
             onclick={saveTranslations}
           >
             {isSaving ? "保存中..." : "保存"}
-          </button>
+          </Button>
         </div>
       </header>
       <div class="preview-body localization-translation-list">
@@ -797,30 +784,6 @@
     min-width: 0;
   }
 
-  .localization-add-button {
-    flex: 0 0 auto;
-    min-height: 26px;
-    border: 1px solid rgba(108, 159, 241, 0.65);
-    border-radius: 6px;
-    padding: 0 8px;
-    color: #b9d2ff;
-    background: rgba(72, 125, 216, 0.16);
-    font: inherit;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .localization-add-button:hover:not(:disabled) {
-    color: #e4eeff;
-    background: rgba(72, 125, 216, 0.32);
-  }
-
-  .localization-add-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
   .localization-action-error {
     margin: 4px 0 0;
     color: #ffabab;
@@ -860,58 +823,6 @@
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
-  }
-
-  .save-button {
-    flex: 0 0 auto;
-    min-height: 30px;
-    border: 1px solid #6c9ff1;
-    border-radius: 7px;
-    padding: 0 12px;
-    color: #08111f;
-    background: #90baff;
-    font: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      background 160ms ease,
-      border-color 160ms ease;
-  }
-
-  .save-button:hover:not(:disabled) {
-    border-color: #a9c9ff;
-    background: #b0ceff;
-  }
-
-  .save-button:disabled {
-    cursor: wait;
-    opacity: 0.55;
-  }
-
-  .delete-key-button {
-    flex: 0 0 auto;
-    min-height: 30px;
-    border: 1px solid rgba(255, 140, 140, 0.48);
-    border-radius: 7px;
-    padding: 0 10px;
-    color: #ffc1c1;
-    background: rgba(122, 39, 51, 0.35);
-    font: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .delete-key-button:hover:not(:disabled) {
-    border-color: rgba(255, 160, 160, 0.72);
-    color: #ffe2e2;
-    background: rgba(156, 46, 61, 0.58);
-  }
-
-  .delete-key-button:disabled {
-    cursor: wait;
-    opacity: 0.65;
   }
 
   .localization-save-status,

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Button from "@/components/Button.svelte";
+
   type Props = {
     rootName: string | null;
     needsPermission: boolean;
@@ -28,28 +30,24 @@
     {#if needsPermission && rootName}
       已找到目录“{rootName}”，请重新授予访问权限后继续。
     {:else}
-      选择游戏项目的 assets 目录，Asset Manager 将直接读取和修改其中的资源与 manifest.json。
+      选择游戏项目的 assets 目录，Asset Manager 将直接读取和修改其中的资源与
+      manifest.json。
     {/if}
   </p>
   <div class="actions">
     {#if needsPermission}
-      <button
-        class="primary-button"
-        type="button"
-        onclick={onRequestPermission}
-        disabled={isBusy}
-      >
+      <Button size="large" disabled={isBusy} onclick={onRequestPermission}>
         {isBusy ? "授权中..." : "授予访问权限"}
-      </button>
+      </Button>
     {/if}
-    <button
-      class={needsPermission ? "secondary-button" : "primary-button"}
-      type="button"
-      onclick={onSelect}
+    <Button
+      type={needsPermission ? "info" : "primary"}
+      size="large"
       disabled={isBusy}
+      onclick={onSelect}
     >
       {isBusy ? "处理中..." : "选择资源目录"}
-    </button>
+    </Button>
   </div>
   {#if actionMessage}
     <p class="action-message" role="alert">{actionMessage}</p>
@@ -111,58 +109,6 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
-  }
-
-  button {
-    min-height: 44px;
-    border-radius: 10px;
-    padding: 0 18px;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      border-color 160ms ease,
-      background 160ms ease,
-      transform 160ms ease,
-      box-shadow 160ms ease;
-  }
-
-  button:focus-visible {
-    outline: 3px solid rgba(137, 181, 255, 0.55);
-    outline-offset: 3px;
-  }
-
-  button:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
-  button:disabled {
-    cursor: wait;
-    opacity: 0.62;
-  }
-
-  .primary-button {
-    border: 1px solid #6c9ff1;
-    color: #08111f;
-    background: #90baff;
-    box-shadow: 0 8px 24px rgba(55, 111, 205, 0.28);
-  }
-
-  .primary-button:hover:not(:disabled) {
-    background: #b0ceff;
-    box-shadow: 0 10px 28px rgba(55, 111, 205, 0.38);
-  }
-
-  .secondary-button {
-    border: 1px solid rgba(154, 176, 210, 0.3);
-    color: #c1cee2;
-    background: rgba(28, 41, 61, 0.72);
-  }
-
-  .secondary-button:hover:not(:disabled) {
-    border-color: rgba(154, 176, 210, 0.56);
-    background: rgba(39, 55, 80, 0.9);
   }
 
   .action-message {

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Button from "@/components/Button.svelte";
+
   type Props = {
     onRetry: () => void | Promise<void>;
     isChecking: boolean;
@@ -12,14 +14,9 @@
   <p class="eyebrow">Asset Manager</p>
   <h1 id="error-title">暂时无法检查 manifest.json</h1>
   <p class="description">请确认资源服务正在运行，然后重试。</p>
-  <button
-    class="primary-button"
-    type="button"
-    onclick={onRetry}
-    disabled={isChecking}
-  >
+  <Button size="large" disabled={isChecking} onclick={onRetry}>
     {isChecking ? "检查中..." : "重新检查"}
-  </button>
+  </Button>
 </div>
 
 <style>
@@ -80,46 +77,5 @@
     color: #a9b7cc;
     font-size: 15px;
     line-height: 1.65;
-  }
-
-  button {
-    min-height: 44px;
-    border-radius: 10px;
-    padding: 0 18px;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      border-color 160ms ease,
-      background 160ms ease,
-      transform 160ms ease,
-      box-shadow 160ms ease;
-  }
-
-  button:focus-visible {
-    outline: 3px solid rgba(137, 181, 255, 0.55);
-    outline-offset: 3px;
-  }
-
-  button:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
-  button:disabled {
-    cursor: wait;
-    opacity: 0.62;
-  }
-
-  .primary-button {
-    border: 1px solid #6c9ff1;
-    color: #08111f;
-    background: #90baff;
-    box-shadow: 0 8px 24px rgba(55, 111, 205, 0.28);
-  }
-
-  .primary-button:hover:not(:disabled) {
-    background: #b0ceff;
-    box-shadow: 0 10px 28px rgba(55, 111, 205, 0.38);
   }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
-  import type { AssetFileSystem } from "../utils/filesystem";
+  import type { AssetFileSystem } from "@/utils/filesystem";
 
   type Props = {
     root: AssetFileSystem;
@@ -39,7 +39,7 @@
   let previewState = $state<PreviewState>("empty");
   let appearanceDetails = $state<AppearanceDetails | null>(null);
   let previewError = $state("");
-  let selectedAnimationName = $state<string | null>(null);
+  let selectedAnimationIndex = $state<number | null>(null);
   let appearanceRequest = 0;
   let imageUrls: string[] = [];
 
@@ -128,14 +128,14 @@
   const selectedAnimation = $derived.by(
     () =>
       appearanceDetails?.animations.find(
-        (animation) => animation.name === selectedAnimationName,
+        (_, index) => index === selectedAnimationIndex,
       ) ?? null,
   );
 
   const selectAppearance = async (appearance: string) => {
     const request = ++appearanceRequest;
     selectedAppearance = appearance;
-    selectedAnimationName = null;
+    selectedAnimationIndex = null;
     appearanceDetails = null;
     previewError = "";
     previewState = "loading";
@@ -184,11 +184,7 @@
         ...parsed,
         animations,
       };
-      const initialAnimation =
-        animations.find(
-          (animation) => animation.name === parsed.defaultAnimation,
-        ) ?? animations[0];
-      selectedAnimationName = initialAnimation?.name ?? null;
+      selectedAnimationIndex = animations[0] ? 0 : null;
       previewState = "ready";
     } catch {
       if (request !== appearanceRequest) {
@@ -199,8 +195,8 @@
     }
   };
 
-  const selectAnimation = (name: string) => {
-    selectedAnimationName = name;
+  const selectAnimation = (index: number) => {
+    selectedAnimationIndex = index;
   };
 
   onDestroy(() => {
@@ -352,13 +348,13 @@
             {#if appearanceDetails.animations.length === 0}
               <p class="appearance-empty-message">暂无 animation</p>
             {:else}
-              {#each appearanceDetails.animations as animation}
+              {#each appearanceDetails.animations as animation, index}
                 <button
                   class="appearance-animation-card"
-                  class:active={selectedAnimationName === animation.name}
+                  class:active={selectedAnimationIndex === index}
                   type="button"
-                  aria-pressed={selectedAnimationName === animation.name}
-                  onclick={() => selectAnimation(animation.name)}
+                  aria-pressed={selectedAnimationIndex === index}
+                  onclick={() => selectAnimation(index)}
                 >
                   <div class="appearance-animation-image">
                     {#if animation.imageUrl}

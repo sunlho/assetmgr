@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
-  import ImportFileDialog from "../components/ImportFileDialog.svelte";
-  import type { AssetFileSystem } from "../utils/filesystem";
+  import ImportFileDialog from "@/components/ImportFileDialog.svelte";
+  import type { AssetFileSystem } from "@/utils/filesystem";
+  import Button from "@/components/Button.svelte";
 
   type PreviewState = "empty" | "loading" | "ready" | "unsupported" | "error";
 
@@ -14,6 +15,7 @@
   let { root, files, onManifestChanged }: Props = $props();
 
   let selectedFile = $state<string | null>(null);
+  let fileSearch = $state("");
   let previewState = $state<PreviewState>("empty");
   let previewText = $state("");
   let previewUrl = $state<string | null>(null);
@@ -22,6 +24,13 @@
   let isImportDialogOpen = $state(false);
   let isRemovingFromManifest = $state(false);
   let removeActionError = $state("");
+
+  let filteredFiles = $derived.by(() => {
+    const query = fileSearch.trim().toLowerCase();
+    return query
+      ? files.filter((file) => file.toLowerCase().includes(query))
+      : files;
+  });
 
   const previewKind = (path: string) => {
     const extension = path.toLowerCase().split(".").pop();
@@ -141,17 +150,28 @@
 >
   <div class="file-list-panel" aria-label="文件资源列表">
     <div class="file-list-header">
-      <h2>文件资源</h2>
-      <button class="import-button" type="button" onclick={openImportDialog}>
-        <span aria-hidden="true">+</span>
-        导入文件
-      </button>
+      <div class="file-list-heading">
+        <h2>文件资源</h2>
+      </div>
+      <Button onclick={openImportDialog}>添加文件</Button>
     </div>
+    <label class="file-search">
+      <span class="visually-hidden">搜索文件资源</span>
+      <input
+        class="file-search-input"
+        type="search"
+        bind:value={fileSearch}
+        placeholder="搜索文件资源..."
+        aria-label="搜索文件资源"
+      />
+    </label>
     <ul class="file-list">
       {#if files.length === 0}
         <li class="empty-file-list">暂无文件资源</li>
+      {:else if filteredFiles.length === 0}
+        <li class="empty-file-list">未找到匹配的文件资源</li>
       {:else}
-        {#each files as file}
+        {#each filteredFiles as file}
           <li>
             <button
               class="file-item"
@@ -173,14 +193,14 @@
     {:else}
       <header class="preview-header">
         <span class="preview-title">{selectedFile}</span>
-        <button
-          class="delete-button"
-          type="button"
-          onclick={removeSelectedFile}
+
+        <Button
+          type="danger"
           disabled={isRemovingFromManifest}
+          onclick={removeSelectedFile}
         >
           {isRemovingFromManifest ? "移除中..." : "删除"}
-        </button>
+        </Button>
       </header>
       <div class="preview-body">
         {#if removeActionError}
@@ -216,3 +236,9 @@
     onImported={handleImportedFile}
   />
 {/if}
+
+<style>
+  .file-search {
+    padding: 6px 4px 0;
+  }
+</style>

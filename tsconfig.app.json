@@ -27,7 +27,12 @@
      */
     "allowJs": false,
     "checkJs": false,
-    "moduleDetection": "force"
+    "moduleDetection": "force",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts",

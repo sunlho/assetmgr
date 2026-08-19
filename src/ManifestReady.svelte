@@ -1,10 +1,10 @@
 <script lang="ts">
-  import AppearanceResources from "./ability/AppearanceResources.svelte";
-  import FileResources from "./ability/FileResources.svelte";
-  import LocalizationResources from "./ability/LocalizationResources.svelte";
-  import MapResources from "./ability/MapResources.svelte";
-  import type { AssetFileSystem } from "./utils/filesystem";
-  import "./ability/resource-tabs.css";
+  import AppearanceResources from "@/ability/AppearanceResources.svelte";
+  import FileResources from "@/ability/FileResources.svelte";
+  import LocalizationResources from "@/ability/LocalizationResources.svelte";
+  import MapResources from "@/ability/MapResources.svelte";
+  import type { AssetFileSystem } from "@/utils/filesystem";
+  import "@/ability/resource-tabs.css";
 
   type ResourceTabId = "files" | "localization" | "appearances" | "maps";
 
