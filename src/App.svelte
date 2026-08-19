@@ -325,14 +325,12 @@
     min-width: 0;
     display: grid;
     place-items: center;
-    padding: 32px 20px;
     overflow: hidden;
-    background: radial-gradient(
-        circle at 50% -20%,
-        rgba(63, 104, 184, 0.2),
-        transparent 48%
-      ),
-      #0c111b;
+    background-color: var(--canvas);
+    background-image:
+      linear-gradient(rgba(86, 78, 63, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(86, 78, 63, 0.045) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   .state-panel {
@@ -345,7 +343,7 @@
     flex-direction: column;
     align-items: center;
     gap: 14px;
-    color: #a9b7cc;
+    color: var(--ink-soft);
   }
 
   .state-panel p {
@@ -353,10 +351,10 @@
   }
 
   .loader {
-    width: 28px;
-    height: 28px;
-    border: 3px solid rgba(144, 186, 255, 0.2);
-    border-top-color: #90baff;
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(232, 101, 50, 0.18);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin 800ms linear infinite;
   }

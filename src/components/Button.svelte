@@ -36,19 +36,22 @@
     justify-content: center;
     align-items: center;
     line-height: 1;
-    min-height: 32px;
-    border: 1px solid #6c9ff1;
-    border-radius: 7px;
-    padding: 0 10px;
-    color: #08111f;
-    background: #6c9ff1;
-    font-size: 14px;
-    font-weight: 500;
+    min-height: 34px;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 0 12px;
+    color: #fff;
+    background: var(--accent);
+    box-shadow: 0 2px 5px rgba(189, 66, 27, 0.15);
+    font-size: 12px;
+    font-weight: 650;
     cursor: pointer;
     transition:
       color 160ms ease,
       background 160ms ease,
-      border-color 160ms ease;
+      border-color 160ms ease,
+      transform 160ms ease,
+      box-shadow 160ms ease;
     position: relative;
     vertical-align: middle;
   }
@@ -59,8 +62,20 @@
   }
 
   .assetmgr-button:hover:not(:disabled) {
-    border-color: #90baff;
-    background: #b0ceff;
+    border-color: var(--accent-strong);
+    background: var(--accent-strong);
+    box-shadow: 0 5px 12px rgba(189, 66, 27, 0.18);
+    transform: translateY(-1px);
+  }
+
+  .assetmgr-button:active:not(:disabled) {
+    box-shadow: none;
+    transform: translateY(0);
+  }
+
+  .assetmgr-button:focus-visible {
+    outline: 3px solid rgba(232, 101, 50, 0.2);
+    outline-offset: 2px;
   }
 
   .assetmgr-button:disabled {
@@ -70,45 +85,58 @@
 
   .assetmgr-button_danger {
     color: #ffffff;
-    border-color: #f56c6c;
-    background: #f56c6c;
+    border-color: var(--danger);
+    background: var(--danger);
+    box-shadow: 0 2px 5px rgba(198, 75, 64, 0.14);
   }
 
   .assetmgr-button_danger:hover:not(:disabled) {
-    border-color: #f78989;
-    background: #f78989;
+    border-color: #a73931;
+    background: #a73931;
   }
 
   .assetmgr-button_info {
-    color: #c1cee2;
-    border-color: rgba(154, 176, 210, 0.36);
-    background: rgba(28, 41, 61, 0.72);
+    color: var(--ink-soft);
+    border-color: var(--line-strong);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-sm);
   }
 
   .assetmgr-button_info:hover:not(:disabled) {
-    border-color: rgba(154, 176, 210, 0.56);
-    background: rgba(39, 55, 80, 0.9);
+    color: var(--ink);
+    border-color: #aaa294;
+    background: var(--surface-muted);
   }
 
   .assetmgr-button_success {
+    border-color: var(--success);
+    background: var(--success);
   }
 
   .assetmgr-button_success:hover:not(:disabled) {
+    border-color: #1b5c43;
+    background: #1b5c43;
   }
 
   .assetmgr-button_warning {
+    border-color: #bd7127;
+    background: #bd7127;
   }
 
   .assetmgr-button_warning:hover:not(:disabled) {
+    border-color: #95531a;
+    background: #95531a;
   }
 
   .assetmgr-button_small {
     min-height: 28px;
-    font-size: 12px;
+    padding-inline: 9px;
+    font-size: 11px;
   }
 
   .assetmgr-button_large {
-    min-height: 36px;
-    font-size: 16px;
+    min-height: 42px;
+    padding-inline: 18px;
+    font-size: 13px;
   }
 </style>

@@ -1,7 +1,12 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
   import ImportFileDialog from "@/components/ImportFileDialog.svelte";
+  import AsepritePreview from "@/components/AsepritePreview.svelte";
   import type { AssetFileSystem } from "@/utils/filesystem";
+  import {
+    decodeAseprite,
+    type AsepriteDocument,
+  } from "@/utils/aseprite";
   import Button from "@/components/Button.svelte";
 
   type PreviewState = "empty" | "loading" | "ready" | "unsupported" | "error";
@@ -19,6 +24,7 @@
   let previewState = $state<PreviewState>("empty");
   let previewText = $state("");
   let previewUrl = $state<string | null>(null);
+  let asepriteDocument = $state<AsepriteDocument | null>(null);
   let previewError = $state("");
   let previewRequest = 0;
   let isImportDialogOpen = $state(false);
@@ -45,6 +51,9 @@
     ) {
       return "image";
     }
+    if (extension === "ase" || extension === "aseprite") {
+      return "aseprite";
+    }
     return "unsupported";
   };
 
@@ -61,6 +70,7 @@
     removeActionError = "";
     previewText = "";
     previewError = "";
+    asepriteDocument = null;
     releasePreviewUrl();
 
     const kind = previewKind(file);
@@ -71,14 +81,19 @@
 
     previewState = "loading";
     try {
+      const content = await root.readFile(file);
       if (kind === "text") {
-        const content = await root.readFile(file);
         if (request !== previewRequest) {
           return;
         }
         previewText = await content.text();
+      } else if (kind === "aseprite") {
+        const document = await decodeAseprite(await content.arrayBuffer());
+        if (request !== previewRequest) {
+          return;
+        }
+        asepriteDocument = document;
       } else {
-        const content = await root.readFile(file);
         const url = URL.createObjectURL(content);
         if (request !== previewRequest) {
           URL.revokeObjectURL(url);
@@ -87,12 +102,15 @@
         previewUrl = url;
       }
       previewState = "ready";
-    } catch {
+    } catch (error) {
       if (request !== previewRequest) {
         return;
       }
       previewState = "error";
-      previewError = "无法加载该文件，请稍后重试。";
+      previewError =
+        kind === "aseprite" && error instanceof Error
+          ? `无法解析 Aseprite 文件：${error.message}`
+          : "无法加载该文件，请稍后重试。";
     }
   };
 
@@ -119,6 +137,7 @@
       previewState = "empty";
       previewText = "";
       previewError = "";
+      asepriteDocument = null;
       await onManifestChanged();
     } catch {
       removeActionError = "无法从 manifest.files 移除该文件，请稍后重试。";
@@ -215,6 +234,8 @@
           <p class="preview-message preview-message--error">
             {previewError}
           </p>
+        {:else if asepriteDocument}
+          <AsepritePreview document={asepriteDocument} />
         {:else if previewUrl}
           <img
             class="preview-image"
@@ -239,6 +260,9 @@
 
 <style>
   .file-search {
-    padding: 6px 4px 0;
+    display: block;
+    padding: 10px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-raised);
   }
 </style>

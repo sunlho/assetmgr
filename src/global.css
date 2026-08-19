@@ -1,12 +1,30 @@
-* {
-  margin: 0;
-  padding: 0;
-  scrollbar-color: rgba(144, 186, 255, 0.42) transparent;
-  scrollbar-width: thin;
-}
 :root {
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-family: "Segoe UI Variable", "Segoe UI", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+  color: #1d2421;
+  background: #ebe7dc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --canvas: #f2efe7;
+  --surface: #faf9f5;
+  --surface-raised: #ffffff;
+  --surface-muted: #f0ede4;
+  --ink: #1d2421;
+  --ink-soft: #5f6863;
+  --ink-faint: #89908c;
+  --line: #ddd8cc;
+  --line-strong: #c9c2b4;
+  --nav: #17201d;
+  --nav-raised: #202a26;
+  --accent: #e86532;
+  --accent-strong: #bd421b;
+  --accent-soft: #fde7dc;
+  --success: #26785a;
+  --danger: #c64b40;
+  --danger-soft: #fbe7e4;
+  --shadow-sm: 0 1px 2px rgba(31, 38, 34, 0.06);
+  --shadow-md: 0 14px 40px rgba(41, 37, 30, 0.1);
 }
 
 *,
@@ -15,28 +33,32 @@
   box-sizing: border-box;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  scrollbar-color: #b7b0a3 transparent;
+  scrollbar-width: thin;
+}
+
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: rgba(144, 186, 255, 0.36);
-  background-clip: padding-box;
-}
-*::-webkit-scrollbar-thumb:hover {
-  background: rgba(144, 186, 255, 0.62);
+  background: #b7b0a3;
   background-clip: padding-box;
 }
 
-body {
-  margin: 0;
-  background: #0c111b;
-  color: #f3f6fb;
+*::-webkit-scrollbar-thumb:hover {
+  background: #8d877d;
+  background-clip: padding-box;
 }
 
 html,
@@ -46,53 +68,80 @@ body,
   overflow: hidden;
 }
 
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--canvas);
+}
+
 input,
 textarea,
 button {
   font-family: inherit;
 }
 
+button,
+input,
 textarea {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  border: 1px solid rgba(154, 176, 210, 0.24);
-  border-radius: 7px;
-  padding: 9px 10px;
-  color: #dce7f8;
-  background: rgba(7, 12, 20, 0.58);
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.5;
-  resize: vertical;
+  -webkit-tap-highlight-color: transparent;
 }
 
-textarea:focus {
-  border-color: #6c9ff1;
-  outline: 2px solid rgba(108, 159, 241, 0.22);
-  outline-offset: 0;
-}
-
-textarea:disabled {
-  cursor: wait;
-  opacity: 0.65;
-}
-
+textarea,
 input[type="text"],
 input[type="search"],
 input[type="number"] {
   display: block;
   width: 100%;
   min-width: 0;
-  box-sizing: border-box;
-  border: 1px solid rgba(154, 176, 210, 0.24);
-  border-radius: 6px;
-  padding: 6px 8px;
-  color: #dce7f8;
-  background: rgba(7, 12, 20, 0.58);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface-raised);
+  box-shadow: inset 0 1px 1px rgba(31, 38, 34, 0.025);
   font: inherit;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+}
+
+textarea {
+  min-height: 84px;
+  padding: 11px 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="number"] {
+  min-height: 34px;
+  padding: 7px 9px;
   font-size: 12px;
+}
+
+textarea:hover:not(:disabled),
+input[type="text"]:hover:not(:disabled),
+input[type="search"]:hover:not(:disabled),
+input[type="number"]:hover:not(:disabled) {
+  border-color: var(--line-strong);
+}
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="number"]:focus {
+  border-color: var(--accent);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(232, 101, 50, 0.14);
+}
+
+textarea:disabled,
+input:disabled {
+  cursor: wait;
+  color: var(--ink-faint);
+  background: var(--surface-muted);
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -101,18 +150,15 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-input[type="text"]:focus,
-input[type="search"]:focus,
-input[type="number"]:focus {
-  border-color: #6c9ff1;
-  outline: 2px solid rgba(108, 159, 241, 0.22);
-  outline-offset: 0;
+input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: var(--accent);
+  vertical-align: middle;
 }
 
-input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: #90baff;
-  vertical-align: middle;
+::selection {
+  color: #fff;
+  background: rgba(189, 66, 27, 0.82);
 }

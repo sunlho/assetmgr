@@ -62,16 +62,19 @@
 
 <style>
   .empty-state {
-    width: min(100%, 560px);
+    position: relative;
+    width: min(calc(100% - 40px), 600px);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 48px 32px;
-    border: 1px solid rgba(154, 176, 210, 0.18);
+    overflow: hidden;
+    padding: 54px 38px 48px;
+    border: 1px solid var(--line);
     border-radius: 16px;
-    background: rgba(19, 28, 43, 0.88);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+    color: var(--ink);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-md);
   }
 
   .file-icon {
@@ -80,10 +83,11 @@
     width: 72px;
     height: 72px;
     margin-bottom: 24px;
-    border: 1px solid rgba(119, 169, 255, 0.42);
-    border-radius: 18px;
-    color: #a8caff;
-    background: rgba(72, 125, 216, 0.16);
+    border: 0;
+    border-radius: 16px;
+    color: #fff;
+    background: var(--nav);
+    box-shadow: inset -8px -8px 0 rgba(255, 255, 255, 0.035);
     font:
       700 25px/1 ui-monospace,
       SFMono-Regular,
@@ -93,8 +97,8 @@
 
   .eyebrow {
     margin: 0 0 10px;
-    color: #86a9db;
-    font-size: 12px;
+    color: var(--accent-strong);
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -102,15 +106,17 @@
 
   h1 {
     margin: 0;
-    font-size: clamp(24px, 5vw, 34px);
+    color: var(--ink);
+    font-size: clamp(25px, 5vw, 34px);
+    letter-spacing: -0.035em;
     line-height: 1.2;
   }
 
   .description {
     max-width: 390px;
     margin: 14px 0 28px;
-    color: #a9b7cc;
-    font-size: 15px;
+    color: var(--ink-soft);
+    font-size: 14px;
     line-height: 1.65;
   }
 
@@ -121,69 +127,10 @@
     gap: 12px;
   }
 
-  button {
-    min-height: 44px;
-    border-radius: 10px;
-    padding: 0 18px;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      border-color 160ms ease,
-      background 160ms ease,
-      transform 160ms ease,
-      box-shadow 160ms ease;
-  }
-
-  button:focus-visible {
-    outline: 3px solid rgba(137, 181, 255, 0.55);
-    outline-offset: 3px;
-  }
-
-  button:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
-  button:disabled {
-    cursor: wait;
-    opacity: 0.62;
-  }
-
-  .primary-button {
-    border: 1px solid #6c9ff1;
-    color: #08111f;
-    background: #90baff;
-    box-shadow: 0 8px 24px rgba(55, 111, 205, 0.28);
-  }
-
-  .primary-button:hover:not(:disabled) {
-    background: #b0ceff;
-    box-shadow: 0 10px 28px rgba(55, 111, 205, 0.38);
-  }
-
-  .primary-button span {
-    margin-right: 7px;
-    font-size: 19px;
-    font-weight: 400;
-    vertical-align: -1px;
-  }
-
-  .secondary-button {
-    border: 1px solid rgba(154, 176, 210, 0.3);
-    color: #c1cee2;
-    background: rgba(28, 41, 61, 0.72);
-  }
-
-  .secondary-button:hover:not(:disabled) {
-    border-color: rgba(154, 176, 210, 0.56);
-    background: rgba(39, 55, 80, 0.9);
-  }
-
   .action-message {
     max-width: 430px;
     margin: 22px 0 0;
-    color: #9db6d8;
+    color: var(--ink-soft);
     font-size: 13px;
     line-height: 1.55;
   }

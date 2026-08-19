@@ -56,15 +56,18 @@
 
 <style>
   .empty-state {
-    width: min(100%, 560px);
+    position: relative;
+    width: min(calc(100% - 40px), 600px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 48px 32px;
-    border: 1px solid rgba(154, 176, 210, 0.18);
+    overflow: hidden;
+    padding: 54px 38px 48px;
+    border: 1px solid var(--line);
     border-radius: 16px;
-    background: rgba(19, 28, 43, 0.88);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+    color: var(--ink);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-md);
     text-align: center;
   }
 
@@ -74,17 +77,18 @@
     width: 72px;
     height: 72px;
     margin-bottom: 24px;
-    border: 1px solid rgba(119, 169, 255, 0.42);
-    border-radius: 18px;
-    color: #a8caff;
-    background: rgba(72, 125, 216, 0.16);
-    font-size: 32px;
+    border: 0;
+    border-radius: 16px;
+    color: #fff;
+    background: var(--nav);
+    box-shadow: inset -8px -8px 0 rgba(255, 255, 255, 0.035);
+    font-size: 30px;
   }
 
   .eyebrow {
     margin: 0 0 10px;
-    color: #86a9db;
-    font-size: 12px;
+    color: var(--accent-strong);
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -92,15 +96,17 @@
 
   h1 {
     margin: 0;
-    font-size: clamp(24px, 5vw, 34px);
+    color: var(--ink);
+    font-size: clamp(25px, 5vw, 34px);
+    letter-spacing: -0.035em;
     line-height: 1.2;
   }
 
   .description {
     max-width: 420px;
     margin: 14px 0 28px;
-    color: #a9b7cc;
-    font-size: 15px;
+    color: var(--ink-soft);
+    font-size: 14px;
     line-height: 1.65;
   }
 
@@ -114,7 +120,7 @@
   .action-message {
     max-width: 430px;
     margin: 22px 0 0;
-    color: #ffabab;
+    color: var(--danger);
     font-size: 13px;
     line-height: 1.55;
   }

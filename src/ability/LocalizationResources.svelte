@@ -721,7 +721,7 @@
 <style>
   .localization-content {
     display: grid;
-    grid-template-columns: 360px 360px 1fr;
+    grid-template-columns: minmax(250px, 290px) minmax(250px, 300px) minmax(0, 1fr);
     gap: 12px;
     min-height: 0;
     overflow: hidden;
@@ -734,7 +734,7 @@
   }
 
   .localization-list-panel {
-    background: rgba(12, 17, 27, 0.32);
+    background: var(--surface-raised);
   }
 
   .localization-level {
@@ -743,7 +743,7 @@
     min-height: 0;
     flex-direction: column;
     flex: 1 1 auto;
-    border-bottom: 1px solid rgba(154, 176, 210, 0.14);
+    border-bottom: 1px solid var(--line);
   }
 
   .localization-key-level {
@@ -756,9 +756,12 @@
     justify-content: space-between;
     gap: 8px;
     flex: 0 0 auto;
-    padding: 8px 12px 4px;
-    color: #91a2bc;
-    font-size: 11px;
+    min-height: 48px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    background: #f7f4ed;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -767,7 +770,7 @@
   .localization-level-header small {
     min-width: 0;
     overflow: hidden;
-    color: #6f819d;
+    color: var(--ink-faint);
     font-size: 10px;
     font-weight: 400;
     letter-spacing: 0;
@@ -786,7 +789,7 @@
 
   .localization-action-error {
     margin: 4px 0 0;
-    color: #ffabab;
+    color: var(--danger);
     font-size: 11px;
     line-height: 1.4;
   }
@@ -811,7 +814,7 @@
 
   .preview-subtitle {
     overflow: hidden;
-    color: #7f90aa;
+    color: var(--ink-faint);
     font-size: 11px;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -832,26 +835,28 @@
   }
 
   .localization-save-status {
-    color: #9bd7ad;
+    color: var(--success);
   }
 
   .localization-save-error {
-    color: #ffabab;
+    color: var(--danger);
   }
 
   .localization-translation-list {
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
-    padding: 12px;
+    gap: 12px;
+    padding: 14px;
+    background: #f6f3ec;
   }
 
   .localization-translation {
     flex: 0 0 auto;
-    padding: 12px 14px;
-    border: 1px solid rgba(154, 176, 210, 0.14);
+    padding: 13px 14px;
+    border: 1px solid var(--line);
     border-radius: 9px;
-    background: rgba(12, 17, 27, 0.28);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-sm);
   }
 
   .localization-language {
@@ -862,7 +867,7 @@
   }
 
   .localization-language-tag {
-    color: #dce7f8;
+    color: var(--accent-strong);
     font:
       700 13px/1.4 ui-monospace,
       SFMono-Regular,
@@ -871,16 +876,22 @@
   }
 
   .localization-language-name {
-    color: #7f90aa;
+    color: var(--ink-faint);
     font-size: 12px;
   }
 
   .localization-translation-error {
     margin: 0;
-    color: #c9d6e9;
+    color: var(--ink-soft);
     font-size: 14px;
     line-height: 1.6;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 1180px) {
+    .localization-content {
+      grid-template-columns: minmax(220px, 250px) minmax(220px, 250px) minmax(0, 1fr);
+    }
   }
 </style>
