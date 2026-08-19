@@ -2,11 +2,9 @@
   import { onDestroy } from "svelte";
   import ImportFileDialog from "@/components/ImportFileDialog.svelte";
   import AsepritePreview from "@/components/AsepritePreview.svelte";
+  import ImagePreview from "@/components/ImagePreview.svelte";
   import type { AssetFileSystem } from "@/utils/filesystem";
-  import {
-    decodeAseprite,
-    type AsepriteDocument,
-  } from "@/utils/aseprite";
+  import { decodeAseprite, type AsepriteDocument } from "@/utils/aseprite";
   import Button from "@/components/Button.svelte";
 
   type PreviewState = "empty" | "loading" | "ready" | "unsupported" | "error";
@@ -40,7 +38,12 @@
 
   const previewKind = (path: string) => {
     const extension = path.toLowerCase().split(".").pop();
-    if (extension === "lua" || extension === "json") {
+    if (
+      extension === "lua" ||
+      extension === "json" ||
+      extension === "tsj" ||
+      extension === "tmj"
+    ) {
       return "text";
     }
     if (
@@ -150,9 +153,12 @@
     isImportDialogOpen = true;
   };
 
-  const handleImportedFile = async (file: string) => {
+  const handleImportedFiles = async (files: string[]) => {
     await onManifestChanged();
-    await selectFile(file);
+    const lastImportedFile = files.at(-1);
+    if (lastImportedFile) {
+      await selectFile(lastImportedFile);
+    }
   };
 
   onDestroy(() => {
@@ -237,11 +243,7 @@
         {:else if asepriteDocument}
           <AsepritePreview document={asepriteDocument} />
         {:else if previewUrl}
-          <img
-            class="preview-image"
-            src={previewUrl}
-            alt={selectedFile ?? ""}
-          />
+          <ImagePreview src={previewUrl} alt={selectedFile ?? ""} />
         {:else}
           <pre class="preview-text">{previewText}</pre>
         {/if}
@@ -254,7 +256,7 @@
   <ImportFileDialog
     {root}
     onClose={() => (isImportDialogOpen = false)}
-    onImported={handleImportedFile}
+    onImported={handleImportedFiles}
   />
 {/if}
 

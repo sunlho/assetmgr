@@ -327,8 +327,10 @@
     place-items: center;
     overflow: hidden;
     background-color: var(--canvas);
-    background-image:
-      linear-gradient(rgba(86, 78, 63, 0.045) 1px, transparent 1px),
+    background-image: linear-gradient(
+        rgba(86, 78, 63, 0.045) 1px,
+        transparent 1px
+      ),
       linear-gradient(90deg, rgba(86, 78, 63, 0.045) 1px, transparent 1px);
     background-size: 32px 32px;
   }
