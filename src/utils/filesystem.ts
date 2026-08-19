@@ -233,16 +233,30 @@ export class AssetFileSystem {
   }
 
   async editManifestFile(path: string, action: ManifestFileAction) {
-    const segments = normalizePath(path);
-    const relative = segments.join("/");
-    if (!relative || relative === "manifest.json") {
+    await this.editManifestFiles([path], action);
+  }
+
+  async editManifestFiles(paths: string[], action: ManifestFileAction) {
+    const relatives = [
+      ...new Set(paths.map((path) => normalizePath(path).join("/"))),
+    ];
+    if (relatives.length === 0) {
+      return;
+    }
+    if (
+      relatives.some(
+        (relative) => !relative || relative === "manifest.json"
+      )
+    ) {
       throw new AssetFileError(
         "invalid-path",
         "manifest.json 不能出现在 manifest.files 中。"
       );
     }
     if (action === "add") {
-      await this.resolveFile(relative);
+      await Promise.all(
+        relatives.map((relative) => this.resolveFile(relative))
+      );
     }
 
     const manifest = await this.readManifest();
@@ -257,17 +271,28 @@ export class AssetFileSystem {
     }
 
     const manifestFiles = manifest.files as unknown[];
-    const containsFile = manifestFiles.some(
-      (entry) => typeof entry === "string" && entry === relative
-    );
-    const changed =
-      action === "add"
-        ? !containsFile && (manifestFiles.push(relative), true)
-        : containsFile &&
-          ((manifest.files = manifestFiles.filter(
-            (entry) => !(typeof entry === "string" && entry === relative)
-          )),
-          true);
+    const relativeSet = new Set(relatives);
+    let changed = false;
+    if (action === "add") {
+      const existingFiles = new Set(
+        manifestFiles.filter((entry): entry is string => typeof entry === "string")
+      );
+      for (const relative of relatives) {
+        if (!existingFiles.has(relative)) {
+          manifestFiles.push(relative);
+          existingFiles.add(relative);
+          changed = true;
+        }
+      }
+    } else {
+      const nextFiles = manifestFiles.filter(
+        (entry) => !(typeof entry === "string" && relativeSet.has(entry))
+      );
+      changed = nextFiles.length !== manifestFiles.length;
+      if (changed) {
+        manifest.files = nextFiles;
+      }
+    }
 
     if (changed) {
       await this.writeText(
